@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>  </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <br>
+        <div class="row">
+            <figure class="text-end">
+                <blockquote class="blockquote">
+                  <p>То, чего они не видят, не сможет им навредить...</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                  Неизвестный автор
+                </figcaption>
+            </figure>
+        </div>
+        <div class="row">
+            <p>
+                Этот простой шифр был создан для дискорд-сервера <a href="https://discord.com/channels/721836486751944754/721836486751944758">Re:Zero Roleplay</a><br>
+                С помощью него вы можете оставить секретное послание невидимыми символами прямо среди букв обычного сообщения.<br>
+                Распоряжайтесь этой силой мудро<br>
+            </p>
+            <p>
+                Внимание!<br>
+                Этот шифр не является криптографически стойким. Он не предназначен для передачи паролей, номеров карт и личной информации<br>
+                Используйте его только в развлекательных целях и не злоупотребляйте сообщениями с невидимыми символами<br>
+                Текст с секретом получается в пять-шесть раз больше обычного. Поэтому спамить им не стоит
+            </p>
+            <p>
+                Для начала, введите в поле ниже видимый текст, а в поле под ним секретный<br>
+                Помните, что невидимые буквы ставятся перед обычными.<br> 
+                Если видимый текст короче секретного, то в него автоматически добавятся пробелы<br>
+            </p>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="encryptBaseInput" placeholder="Основной текст">
+                    <label for="encryptBaseInput">Основной текст</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="encryptTextInput" placeholder="Основной текст">
+                    <label for="encryptTextInput">Секретный текст</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div id="symbolsCount" class="form-text"></div>
+                <div class="input-group mb-3">
+                    <button class="btn btn-outline-secondary" type="button" id="encryptButton">Копировать</button>
+                    <input id="encryptResult" type="text" class="form-control" placeholder="" aria-describedby="encryptButton" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <p>
+                Чтобы расшифровать секретное сообщение, вставьте его сюда<br>
+                Вместе с сообщением вам сообщили ключ? Установите его значение в конце страницы<br>
+            </p>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="decryptInput" placeholder="Расшифровать">
+                    <label for="decryptInput">Расшифровать</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-3">
+                    <button class="btn btn-outline-secondary" type="button" id="decryptButton">Копировать</button>
+                    <input id="decryptResult" type="text" class="form-control" placeholder="" aria-describedby="decryptButton" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <p>
+                Это секретный ключ.<br>
+                Если хотите дополнительной секретности, то выберите небольшое число и введите его в поле ниже.<br>
+                Теперь даже те, кто знают об этом сайте, не смогут прочитать сообщение<br>
+                Не забудьте сообщить ключ получателям!<br>
+            </p>
+        </div>
+        <div class="row">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon3">Ключ</span>
+                <input type="number" class="form-control" id="keyInput" aria-describedby="basic-addon3" min="0" max="65000" value="0">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const keyInput = document.getElementById("keyInput");
+
+        const encryptBaseInput = document.getElementById("encryptBaseInput");
+        const encryptTextInput = document.getElementById("encryptTextInput");
+        const encryptResult = document.getElementById("encryptResult");
+        const encryptButton = document.getElementById("encryptButton");
+        const symbolsCount = document.getElementById("symbolsCount");
+
+        const decryptInput = document.getElementById("decryptInput");
+        const decryptResult = document.getElementById("decryptResult");
+        const decryptButton = document.getElementById("decryptButton");
+
+        keyInput.oninput = function () { updateEncrypt(); updateDecrypt(); };
+        encryptBaseInput.oninput = updateEncrypt;
+        encryptTextInput.oninput = updateEncrypt;
+
+        decryptInput.oninput = updateDecrypt;
+        function updateDecrypt() {
+            decryptResult.value = decrypt(decryptInput.value);
+        }
+
+        encryptButton.onclick = function() {
+            navigator.clipboard.writeText(encryptResult.value);
+            encryptButton.innerText = 'Скопировано!';
+            setTimeout(() => {
+                encryptButton.innerText = 'Копировать';
+                encryptButton.blur();
+            }, 1000);
+        }
+
+        decryptButton.onclick = function() {
+            navigator.clipboard.writeText(decryptResult.value);
+            decryptButton.innerText = 'Скопировано!';
+            setTimeout(() => {
+                decryptButton.innerText = 'Копировать';
+                decryptButton.blur();
+            }, 1000);
+        }
+
+        let key = 0;
+        function updateEncrypt() {
+            const val = parseInt(keyInput.value);
+            if (!Number.isInteger(val)) {
+                keyInput.value = 0;
+                key = 0;
+            } else {
+                key = val;
+            }
+
+            encryptResult.value = encrypt(encryptBaseInput.value, encryptTextInput.value);
+            if (encryptResult.value.length) {
+                symbolsCount.innerText = `Количество символов ${encryptResult.value.length}`;
+            }
+        }
+
+        const symbols = [ 8205, 8204, 8203, 8291 ].map(x => String.fromCodePoint(x));
+
+        function encrypt(base, text) {
+            const chars = [...text].map(encryptChar);
+            const baseChars = [...base];
+
+            const result = [];
+            const length = Math.max(chars.length, baseChars.length);
+            for (let i = 0; i < length; i++) {
+                result.push(baseChars[i] || ' ');
+                if (chars[i]) 
+                    result.push(chars[i]);
+            }
+
+            return result.join('');
+        }
+
+        function encryptChar(c) {
+            const str = (key + c.codePointAt()).toString(symbols.length);
+            return [...str].map(x => symbols[+x]).join('');
+        }
+
+        function decrypt(text) {
+            const res = [];
+            const temp = [];
+            for (const char of text) {
+                if (symbols.includes(char)) {
+                    temp.push(char);
+                } else if (temp.length) {
+                    res.push(decryptChar(temp));
+                    temp.length = 0;
+                }
+            }
+            if (temp.length) res.push(decryptChar(temp));
+
+            return String.fromCodePoint(...res);
+        }
+
+        function decryptChar(chars) {
+            return Math.abs(parseInt(chars.map(x => symbols.indexOf(x)).join(''), symbols.length) - key);
+        }
+    </script>
+</body>
+</html>
